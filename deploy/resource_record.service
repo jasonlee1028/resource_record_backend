@@ -1,0 +1,20 @@
+[Unit]
+Description=Equota Data Collecting
+# Requirements
+Requires=network.target
+# Dependency ordering
+After=network.target
+
+[Service]
+Restart=on-failure
+RestartSec=10s
+WorkingDirectory=/root/resource_record_backend
+RuntimeDirectory=uwsgi
+KillSignal=SIGQUIT
+Type=notify
+NotifyAccess=all
+StandardError=syslog
+ExecStart=/root/.local/share/virtualenvs/resource_record_backend-hy2qKY5x/bin/uwsgi /root/resource_record_backend/deploy/resource_record.ini 
+ 
+[Install]
+WantedBy=multi-user.target
