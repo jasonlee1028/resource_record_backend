@@ -9,8 +9,9 @@ graphene = "*"
 graphene-django = "*"
 django-cors-headers = "*"
 mysqlclient = "*"
+uwsgi = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
