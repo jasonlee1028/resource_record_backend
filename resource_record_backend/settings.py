@@ -81,8 +81,15 @@ GRAPHENE = {
     'SCHEMA': 'resource_record_backend.schema.schema',
     'MIDDLEWARE': (
         'graphene_django.debug.DjangoDebugMiddleware',
+        'graphql_jwt.middleware.JSONWebTokenMiddleware'
     )
 }
+
+# graphql jwt认证4g
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -90,7 +97,6 @@ GRAPHENE = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        # 'HOST': "45.40.248.122",
         'HOST': "127.0.0.1",
         'PORT': "3306",
         'USER': "root",
@@ -157,3 +163,8 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with',
 )
 
+# 本地测试时使用，不加入git版本控制
+try:
+    from .local_settings import DATABASES
+except:
+    pass

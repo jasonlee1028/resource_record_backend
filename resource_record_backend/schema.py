@@ -13,7 +13,9 @@ class Query(
     pass
 
 
-class Mutation(graphene.ObjectType):
+class Mutation(
+    WebResources.schema.Mutation,
+    graphene.ObjectType):
     """
     Graphql mutation
     """

@@ -17,6 +17,9 @@ class NetResource(DjangoObjectType):
 
 
 class Query(object):
+    """
+    网络资源查询
+    """
     resource_category = graphene.List(ResourceCategory,
                                       description="资源分类"
                                       )
@@ -46,3 +49,48 @@ class Query(object):
 
         return net_resource_list
 
+
+class NewNetResourceData(graphene.InputObjectType):
+    """
+    新增网络资源的字段
+    """
+    resource_category_id = graphene.String(required=True, description="资源类型")
+    display_name = graphene.String(required=True, description="资源名字")
+    url = graphene.String(required=True, description="资源链接")
+    description = graphene.String(description="资源描述")
+
+
+class CreateWebResource(graphene.Mutation):
+    """
+    新增网络资源
+    """
+    ok = graphene.Boolean(description="操作状态, 成功(True)或失败(False)")
+    error_message = graphene.String(description="错误信息")
+
+    class Arguments:
+        new_data = NewNetResourceData(required=True, description="新增资源所包含的所有字段")
+
+    def mutate(self, info, new_data=None):
+        ok = True
+        error_message = ''
+
+        if not new_data:
+            ok = False
+
+        else:
+            _, new_data['resource_category_id'] = graphene.Node.from_global_id(new_data['resource_category_id'])
+            try:
+                model.NetResource.objects.create(**new_data)
+
+            except Exception as e:
+                ok = False
+                error_message = str(e)
+
+        return CreateWebResource(ok=ok, error_message=error_message)
+
+
+class Mutation(object):
+    """
+    操作网络资源
+    """
+    create_web_resource = CreateWebResource.Field(description="新增网络资源")
