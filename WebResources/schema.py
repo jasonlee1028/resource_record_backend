@@ -16,6 +16,11 @@ class NetResource(DjangoObjectType):
         interfaces = (graphene.Node,)
 
 
+class ResourceStatisticInfo(graphene.ObjectType):
+    resource_category_name = graphene.String(description="资源类型名字")
+    resource_count = graphene.Int(description="资源类型个数")
+
+
 class Query(object):
     """
     网络资源查询
@@ -48,6 +53,22 @@ class Query(object):
             net_resource_list = model.NetResource.objects.filter(resource_category_id=category_id)
 
         return net_resource_list
+
+    resource_statistic = graphene.List(ResourceStatisticInfo, description="资源统计")
+
+    @staticmethod
+    def resolve_resource_statistic(root, info, **kwargs):
+        resource_statistic_list = list()
+
+        resource_category_objects = model.ResourceCategory.objects.all()
+        for resource_category in resource_category_objects:
+            count = model.NetResource.objects.filter(resource_category=resource_category).count()
+            resource_statistic_list.append(ResourceStatisticInfo(
+                resource_category_name=resource_category.display_name,
+                resource_count=count
+            ))
+
+        return resource_statistic_list
 
 
 class NewNetResourceData(graphene.InputObjectType):
