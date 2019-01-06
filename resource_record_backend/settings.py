@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'v4%b+uu!oy9k&b&^4$miay9+pb+sh6i7o=$luc@+hy1%mu71id'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -139,6 +139,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+# 线上静态文件保存路径
+PROD = True
+
+if PROD:
+    STATIC_ROOT = '/var/www/resource_record/'
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 STATIC_URL = '/static/'
 
 
@@ -165,6 +173,6 @@ CORS_ALLOW_HEADERS = (
 
 # 本地测试时使用，不加入git版本控制
 try:
-    from .local_settings import DATABASES
+    from .local_settings import *
 except:
     pass
