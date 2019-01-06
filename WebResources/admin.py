@@ -18,3 +18,17 @@ class NetResourceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(NetResource, NetResourceAdmin)
+
+
+class OriginalCategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'display_name')
+
+
+admin.site.register(OriginalCategory, OriginalCategoryAdmin)
+
+
+class OriginalResourceAdmin(admin.ModelAdmin):
+    list_display = ('id', 'original_category', 'title')
+
+
+admin.site.register(OriginalResource, OriginalResourceAdmin)

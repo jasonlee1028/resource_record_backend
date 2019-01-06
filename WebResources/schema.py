@@ -1,5 +1,6 @@
 import graphene
 from graphene_django import DjangoObjectType
+from django.utils import timezone
 
 import WebResources.models as model
 
@@ -19,6 +20,25 @@ class NetResource(DjangoObjectType):
 class ResourceStatisticInfo(graphene.ObjectType):
     resource_category_name = graphene.String(description="资源类型名字")
     resource_count = graphene.Int(description="资源类型个数")
+
+
+class OriginalCategory(DjangoObjectType):
+    class Meta:
+        model = model.OriginalCategory
+        interfaces = (graphene.Node, )
+
+
+class OriginalResource(DjangoObjectType):
+    class Meta:
+        model = model.OriginalResource
+        interfaces = (graphene.Node, )
+
+    create_time = graphene.String(description="创建时间")
+
+    @staticmethod
+    def resolve_create_time(root, info, **kwargs):
+        create_time = timezone.localtime(root.create_time)
+        return create_time.strftime('%Y-%m-%d %H:%M:%S')
 
 
 class Query(object):
@@ -69,6 +89,31 @@ class Query(object):
             ))
 
         return resource_statistic_list
+
+    original_category = graphene.List(OriginalCategory, description="个人原创资源类型")
+
+    @staticmethod
+    def resolve_original_category(root, info, **kwargs):
+        return model.OriginalCategory.objects.all()
+
+    original_resource = graphene.Field(OriginalResource,
+                                       args={
+                                           'original_resource_id': graphene.String(required=True,
+                                                                                   description="个人原创指定文章ID")
+                                       },
+                                       description="获取个人原创文章详情")
+
+    @staticmethod
+    def resolve_original_resource(root, info, **kwargs):
+        _, original_resource_id = graphene.Node.from_global_id(kwargs.get('original_resource_id'))
+        return model.OriginalResource.objects.get(pk=original_resource_id)
+
+    original_resource_list = graphene.List(OriginalResource,
+                                           description="个人原创资源列表")
+
+    @staticmethod
+    def resolve_original_resource_list(root, info, **kwargs):
+        return model.OriginalResource.objects.all().order_by('-create_time')
 
 
 class NewNetResourceData(graphene.InputObjectType):

@@ -30,3 +30,26 @@ class NetResource(models.Model):
         return f'[{self.resource_category.display_name}]:{self.display_name}'
 
 
+class OriginalCategory(models.Model):
+    """
+    个人原创资源类型
+    """
+    name = models.CharField(max_length=64)
+    display_name = models.CharField(max_length=128)
+
+    def __str__(self):
+        return f'{self.display_name}'
+
+
+class OriginalResource(models.Model):
+    """
+    个人原创资源
+    """
+    original_category = models.ForeignKey(OriginalCategory, on_delete=models.CASCADE)
+    title = models.CharField(max_length=128)
+    content = models.TextField()
+    create_time = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'{self.title}'
+
