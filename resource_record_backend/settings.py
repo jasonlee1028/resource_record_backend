@@ -143,7 +143,7 @@ USE_TZ = True
 PROD = True
 
 if PROD:
-    STATIC_ROOT = '/var/www/resource_record/'
+    STATIC_ROOT = '/var/www/resource_record/static/'
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 

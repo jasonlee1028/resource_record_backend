@@ -25,13 +25,13 @@ class ResourceStatisticInfo(graphene.ObjectType):
 class OriginalCategory(DjangoObjectType):
     class Meta:
         model = model.OriginalCategory
-        interfaces = (graphene.Node, )
+        interfaces = (graphene.Node,)
 
 
 class OriginalResource(DjangoObjectType):
     class Meta:
         model = model.OriginalResource
-        interfaces = (graphene.Node, )
+        interfaces = (graphene.Node,)
 
     create_time = graphene.String(description="创建时间")
 
@@ -109,11 +109,16 @@ class Query(object):
         return model.OriginalResource.objects.get(pk=original_resource_id)
 
     original_resource_list = graphene.List(OriginalResource,
+                                           args={
+                                               'original_category_id': graphene.String(required=True,
+                                                                                       description="个人原创资源类型ID")
+                                           },
                                            description="个人原创资源列表")
 
     @staticmethod
     def resolve_original_resource_list(root, info, **kwargs):
-        return model.OriginalResource.objects.all().order_by('-create_time')
+        _, original_category_id = graphene.Node.from_global_id(kwargs.get('original_category_id'))
+        return model.OriginalResource.objects.filter(original_category_id=original_category_id).order_by('-create_time')
 
 
 class NewNetResourceData(graphene.InputObjectType):
